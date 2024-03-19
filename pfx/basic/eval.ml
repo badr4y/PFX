@@ -10,36 +10,30 @@ let string_of_state (cmds,stack) =
     (sprintf " with stack %s" (string_of_stack stack))
 
 (* Question 4.2 *)
-type error = string
-type state = command list * stack
-type result = (command list * stack) Or_error.t
-
-let step (cmds, stack) =
-  match cmds, stack with
-  | [], _ -> Error ("Nothing to step", (cmds, stack))
+let step state =
+  match state with
+  | [], _ -> Error("Nothing to step", state)
   | Push n :: q, s -> Ok (q, n :: s)
   | Pop :: q, x :: s -> Ok (q, s)
-  | Pop :: _, [] -> Error ("Pop from an empty stack", (cmds, stack))
+  | Pop :: _, [] -> Error("Pop from an empty stack", ([], []))
   | Add :: q, x :: y :: s -> Ok (q, (x + y) :: s)
-  | Add :: _, _ -> Error ("Not enough operands for addition", (cmds, stack))
+  | Add :: _, _ -> Error("Not enough operands for addition", ([], []))
   | Sub :: q, x :: y :: s -> Ok (q, (y - x) :: s)
-  | Sub :: _, _ -> Error ("Not enough operands for subtraction", (cmds, stack))
+  | Sub :: _, _ -> Error("Not enough operands for subtraction", ([], []))
   | Mul :: q, x :: y :: s -> Ok (q, (x * y) :: s)
-  | Mul :: _, _ -> Error ("Not enough operands for multiplication", (cmds, stack))
+  | Mul :: _, _ -> Error("Not enough operands for multiplication", ([], []))
   | Div :: q, x :: y :: s ->
       if x = 0 then
-        Error ("Division by zero", (cmds, stack))
+        Error("Division by zero", ([], []))
       else
         Ok (q, (y / x) :: s)
-  | Div :: _, _ -> Error ("Not enough operands for division", (cmds, stack))
+  | Div :: _, _ -> Error("Not enough operands for division", ([], []))
   | Rem :: q, x :: y :: s ->
       if x = 0 then
-        Error ("Division by zero in remainder", (cmds, stack))
+        Error("Division by zero in remainder", ([], []))
       else
         Ok (q, (y mod x) :: s)
-  | Rem :: _, _ -> Error ("Not enough operands for remainder", (cmds, stack))
-  | _, _ -> Error ("Unhandled instruction", (cmds, stack))
-
+  | Rem :: _, _ -> Error("Not enough operands for remainder", ([], []))
 
 let eval_program (numargs, cmds) args =
   let rec execute = function
@@ -58,26 +52,3 @@ let eval_program (numargs, cmds) args =
     | Ok(Some result) -> printf "= %i\n" result
     | Error(msg,s) -> printf "Raised error %s in state %s\n" msg (string_of_state s)
   else printf "Raised error \nMismatch between expected and actual number of args\n"
-
-(* let rec step : pfx_instruction * stack -> stack = function
-  | Push n, s -> n :: s
-  | Pop, x :: s -> s
-  | Pop, [] -> raise (Runtime_error "Pop from an empty stack")
-  | Add, x :: y :: s -> (x + y) :: s
-  | Add, _ -> raise (Runtime_error "Not enough operands for addition")
-  | Sub, x :: y :: s -> (y - x) :: s
-  | Sub, _ -> raise (Runtime_error "Not enough operands for subtraction")
-  | Mul, x :: y :: s -> (x * y) :: s
-  | Mul, _ -> raise (Runtime_error "Not enough operands for multiplication")
-  | Div, x :: y :: s ->
-      if x = 0 then
-        raise (Runtime_error "Division by zero")
-      else
-        (y / x) :: s
-  | Div, _ -> raise (Runtime_error "Not enough operands for division")
-  | Rem, x :: y :: s ->
-      if x = 0 then
-        raise (Runtime_error "Division by zero in remainder")
-      else
-        (y mod x) :: s
-  | Rem, _ -> raise (Runtime_error "Not enough operands for remainder") *)
