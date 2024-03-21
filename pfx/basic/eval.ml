@@ -14,7 +14,7 @@ let step state =
   match state with
   | [], _ -> Error("Nothing to step", state)
   | Push n :: q, s -> Ok (q, n :: s)
-  | Pop :: q, x :: s -> Ok (q, s)
+  | Pop :: q, _ :: s -> Ok (q, s)
   | Pop :: _, [] -> Error("Pop from an empty stack", ([], []))
   | Add :: q, x :: y :: s -> Ok (q, (x + y) :: s)
   | Add :: _, _ -> Error("Not enough operands for addition", ([], []))
