@@ -1,5 +1,5 @@
 %{
-  (* Ocaml code here*)
+open Ast
 
 %}
 
@@ -7,16 +7,15 @@
  * The tokens *
  **************)
 
-(* enter tokens here, they should begin with %token *)
 %token EOF
+%token <Lexing.lexbuf> PLUS MINUS TIMES DIV MOD POP SWAP
 %token <int> INT
-
+%token <int*Lexing.lexbuf> PUSH
 
 (******************************
  * Entry points of the parser *
  ******************************)
 
-(* enter your %start clause here *)
 %start <Ast.program> program
 
 %%
@@ -25,8 +24,20 @@
  * The rules *
  *************)
 
-(* list all rules composing your grammar; obviously your entry point has to be present *)
+program:
+  | arg_count= INT commands = command_listEOF { (arg_count, commands)}
 
-program: i=INT EOF { i,[] }
+command_list:
+  | {[]}
+  | cmd=command rest=command_list {cmd :: rest}
+
+command:
+  | result=PUSH { Push(fst result, snd result) }
+  | lexbuf= POP          { POP(lexbuf) }
+  | lexbuf= SWAP          { SWAP(lexbuf) }
+  | lexbuf=PLUS          { ADD(lexbuf) }
+  | lexbuf=MINUS          { SUB(lexbuf) }
+  | lexbuf=DIV          { DIV(lexbuf) }
+  | lexbuf=MOD          { REM(lexbuf) }
 
 %%

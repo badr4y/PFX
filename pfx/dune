@@ -1,3 +1,4 @@
 (executables
- (names pfxVM main)
+ ; (names pfxVM main)
+ (names pfxVM)
  (libraries utils basicPfx))
