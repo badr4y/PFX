@@ -28,7 +28,7 @@ let parse_eval file =
 let _ =
   (*function to save arguments*)
   let save_arg i = args := !args@[i] in
-  (*each option -a INTEGER is considered as an argument *)
+  (*each option -a integer is considered as an argument *)
   Arg.parse ["-a",Arg.Int save_arg,"integer argument"] parse_eval ""
 
 (*let print_token = function
