@@ -4,6 +4,7 @@
 %}
 
 %token EOF PLUS MINUS TIMES DIV MOD LPAR RPAR
+%token<Lexing.lexbuf> EXEC GET
 %token <int> INT
 %token <string> IDENT
 (* For function support *)
@@ -41,5 +42,9 @@ simple_expr:
   | TIMES     { Bmul }
   | DIV       { Bdiv }
   | MOD       { Bmod }
+
+command :
+  | lexbuf=EXEC {EXEC(lexbuf)}
+  | lexbuf=GET { GET(lexbuf)}
 
 %%
